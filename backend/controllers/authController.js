@@ -28,4 +28,25 @@ exports.login = async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
+
+exports.getMe = async (req, res, next) => {
+  const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
+  if (!token) return res.status(401).json({ message: 'Acceso denegado: Token requerido' });
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.userId = decoded.userId;
+    req.isAdmin = decoded.isAdmin;
+
+    // Busca al usuario en la base de datos y añádelo a req
+    const user = await User.findById(req.userId);
+    if (!user) return res.status(404).json({ message: 'Usuario no encontrado' });
+
+    req.user = user; // Agrega el usuario a req
+    next();
+  } catch (error) {
+    res.status(401).json({ message: 'Token inválido o expirado' });
+  }
+
+} 
 };
