@@ -1,0 +1,24 @@
+import React from "react";
+import { useNavigate } from "react-router-dom";
+
+function Logout() {
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        localStorage.removeItem('username');
+        navigate("/login");
+    };
+
+    return (
+        <div className="d-flex justify-content-center align-items-center vh-100">
+            <div className="bg-white p-3 rounded w-25 text-center">
+                <h2>Are you sure you want to logout?</h2>
+                <button onClick={handleLogout} className="btn btn-danger w-100 rounded-0">
+                    Logout
+                </button>
+            </div>
+        </div>
+    );
+}
+
+export default Logout;

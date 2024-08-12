@@ -1,72 +1,74 @@
-// src/components/Login.js
-import React, { useState, useContext } from 'react';
-import { Form, Button, Container, Row, Col, Alert } from 'react-bootstrap';
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext';
+import { useNavigate } from "react-router-dom";
 
-const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const { setUser } = useContext(AuthContext);
-  const navigate = useNavigate();
+function Login() {    
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setError('');
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        axios.post("http://localhost:4000/api/auth/login", { email, password })
+            .then(result => {
+                if (result.data.token) {
+                    // Almacena el token, el nombre del usuario y si es admin en el almacenamiento local
+                    localStorage.setItem('token', result.data.token);
+                    localStorage.setItem('username', result.data.user.email);
+                    localStorage.setItem('isAdmin', result.data.user.isAdmin); // Guardar isAdmin
 
-    try {
-      const { data } = await axios.post('http://localhost:4000/api/auth/login', {
-        email,
-        password,
-      });
+                    if (result.data.user.isAdmin) {
+                        navigate("/");
+                    } else {
+                        navigate("/");
+                    }
+                } else {
+                    alert("Login fallido: " + result.data.message);
+                }
+            })
+            .catch(err => {
+                if (err.response) {
+                    console.log('Error data:', err.response.data); 
+                    console.log('Error status:', err.response.status); 
+                    console.log('Error headers:', err.response.headers); 
+                } else {
+                    console.log(err); 
+                }
+            });
+    };
 
-      localStorage.setItem('token', data.token);
-      setUser(data.user); // Actualizar el usuario en el contexto
-      navigate('/'); // Redirigir al home
-    } catch (err) {
-      setError(err.response.data.message || 'Error al iniciar sesión');
-    }
-  };
-
-  return (
-    <Container className="mt-5">
-      <Row className="justify-content-md-center">
-        <Col xs={12} md={6}>
-          <h1>Iniciar Sesión</h1>
-          {error && <Alert variant="danger">{error}</Alert>}
-          <Form onSubmit={handleLogin}>
-            <Form.Group controlId="formEmail">
-              <Form.Label>Correo Electrónico</Form.Label>
-              <Form.Control
-                type="email"
-                placeholder="Ingresa tu correo"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </Form.Group>
-
-            <Form.Group controlId="formPassword" className="mt-3">
-              <Form.Label>Contraseña</Form.Label>
-              <Form.Control
-                type="password"
-                placeholder="Ingresa tu contraseña"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </Form.Group>
-
-            <Button variant="primary" type="submit" className="mt-4">
-              Iniciar Sesión
-            </Button>
-          </Form>
-        </Col>
-      </Row>
-    </Container>
-  );
-};
+    return (
+        <div className="d-flex justify-content-center align-items-center bg-secondary vh-100">
+            <div className="bg-white p-3 rounded w-25">
+                <h2><center>Login</center></h2>
+                <form onSubmit={handleSubmit}>
+                    <div className="mb-3">
+                        <label htmlFor="email"><strong>Email</strong></label>
+                        <input type="text" 
+                            placeholder='Enter Email' 
+                            autoComplete='off' 
+                            name='email' 
+                            className='form-control rounded-0' 
+                            onChange={(e) => setEmail(e.target.value)}
+                        />
+                    </div>
+                    <div className="mb-3">
+                        <label htmlFor="password"><strong>Password</strong></label>
+                        <input type="password" 
+                            placeholder='Enter Password' 
+                            name='password' 
+                            className='form-control rounded-0' 
+                            onChange={(e) => setPassword(e.target.value)}
+                        />
+                    </div>
+                    <button type="submit" className="btn btn-success w-100 rounded-0">Login</button>
+                </form>
+                <p>Don't have an account?</p>
+                <Link to="/register" className="btn btn-default border w-100 bg-light rounded-0 text-decoration-none">Sign Up</Link>
+            </div>
+        </div>
+    );
+}
 
 export default Login;

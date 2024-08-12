@@ -1,32 +1,45 @@
 // src/components/ProductList.js
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React from 'react';
+import { Card, Container, Row, Col } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 
 const ProductList = () => {
-  const [products, setProducts] = useState([]);
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      const { data } = await axios.get('http://localhost:4000/api/products');
-      setProducts(data);
-    };
-    fetchProducts();
-  }, []);
+  const handleCardClick = (tag) => {
+    navigate(`/products/tag/${tag}`);
+  };
 
   return (
-    <div>
-      <h1>Products</h1>
-      <div className="product-list">
-        {products.map(product => (
-          <div key={product._id}>
-            <h2>{product.name}</h2>
-            <img src={product.image} alt={product.name} />
-            <p>{product.description}</p>
-            <p>${product.price}</p>
-          </div>
-        ))}
-      </div>
-    </div>
+    <Container className="mt-5">
+      <h1 className="text-center mb-4">Categories</h1>
+      <Row className="justify-content-center">
+        <Col md={4} className="mb-4">
+          <Card onClick={() => handleCardClick('Whisky')} style={{ cursor: 'pointer' }}>
+            <Card.Img variant="top" src="/path/to/whisky-image.jpg" alt="Whisky" />
+            <Card.Body>
+              <Card.Title className="text-center">Whisky</Card.Title>
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col md={4} className="mb-4">
+          <Card onClick={() => handleCardClick('Tequila')} style={{ cursor: 'pointer' }}>
+            <Card.Img variant="top" src="/path/to/another-image.jpg" alt="Tequila" />
+            <Card.Body>
+              <Card.Title className="text-center">Tequila</Card.Title>
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col md={4} className="mb-4">
+          <Card onClick={() => handleCardClick('third-category')} style={{ cursor: 'pointer' }}>
+            <Card.Img variant="top" src="/path/to/third-image.jpg" alt="Third Category" />
+            <Card.Body>
+              <Card.Title className="text-center">Third Category</Card.Title>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+    </Container>
   );
 };
 

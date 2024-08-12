@@ -14,3 +14,12 @@ exports.createOrder = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+exports.getOrders = async (req, res) => {
+  try {
+    const orders = await Order.find({ user: req.userId }).populate('user', 'name email');
+    res.status(200).json(orders);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};

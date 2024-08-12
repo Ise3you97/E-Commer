@@ -7,35 +7,57 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
+  // Cargar el usuario desde el servidor al iniciar
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    console.log("este es el token ", token);
+    const fetchUser = async () => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          const response = await axios.get('http://localhost:4000/api/auth/me', {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          setUser(response.data.user);
+        } catch (error) {
+          console.error('Error al cargar el usuario', error);
+          setUser(null);
+        }
+      }
+    };
 
-    if (token) {
-      axios.get('http://localhost:4000/api/auth/me', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-
-      .then(response => {
-        setUser(response.data.user);
-        console.log(response.data.user)
-      })
-      .catch(() => {
-        localStorage.removeItem('token');
-        setUser(null);
-      });
-    }
+    fetchUser();
   }, []);
+
+  const login = async (email, password) => {
+    try {
+      const { data } = await axios.post('http://localhost:4000/api/auth/login', {
+        email,
+        password,
+      });
+
+      // Guardar el token en localStorage
+      localStorage.setItem('token', data.token);
+
+      // Cargar el usuario
+      const response = await axios.get('http://localhost:4000/api/auth/me', {
+        headers: {
+          Authorization: `Bearer ${data.token}`,
+        },
+      });
+      setUser(response.data.user);
+    } catch (error) {
+      console.error('Error al iniciar sesión', error);
+      throw error; // Puedes manejar el error de otra manera si es necesario
+    }
+  };
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('token');
   };
 
   return (
-    <AuthContext.Provider value={{ user, setUser, logout }}>
+    <AuthContext.Provider value={{ user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
