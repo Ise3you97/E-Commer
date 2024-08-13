@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Row, Col, Card, Button, Alert } from 'react-bootstrap';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Container, Row, Col, Card, Button, Alert, Form } from 'react-bootstrap';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const Home = () => {
@@ -9,17 +9,14 @@ const Home = () => {
   const [error, setError] = useState('');
   const [isAdmin, setIsAdmin] = useState(false);
   const [quantities, setQuantities] = useState({});
-  const location = useLocation();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredProducts, setFilteredProducts] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const searchParams = new URLSearchParams(location.search);
-        const searchQuery = searchParams.get('search') || '';
-        const { data } = await axios.get('http://localhost:4000/api/products', {
-          params: { search: searchQuery },
-        });
+        const { data } = await axios.get('http://localhost:4000/api/products');
         setFeaturedProducts(data);
         setLoading(false);
       } catch (error) {
@@ -35,7 +32,20 @@ const Home = () => {
     if (storedIsAdmin === 'true') {
       setIsAdmin(true);
     }
-  }, [location.search]);
+  }, []);
+
+  useEffect(() => {
+    // Filter products based on search query
+    if (searchQuery) {
+      const lowercasedQuery = searchQuery.toLowerCase();
+      const filtered = featuredProducts.filter(product =>
+        product.name.toLowerCase().includes(lowercasedQuery)
+      );
+      setFilteredProducts(filtered);
+    } else {
+      setFilteredProducts(featuredProducts);
+    }
+  }, [searchQuery, featuredProducts]);
 
   const handleQuantityChange = (productId, delta) => {
     setQuantities(prevQuantities => ({
@@ -87,6 +97,10 @@ const Home = () => {
     }
   };
 
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -95,20 +109,26 @@ const Home = () => {
     <Container className="mt-5">
       <Row className="text-center mb-4">
         <Col>
-          <p>Explora nuestros productos destacados y encuentra lo que necesitas.</p>
+          <Form.Control
+            type="text"
+            placeholder="Buscar productos..."
+            value={searchQuery}
+            onChange={handleSearchChange}
+            className="mb-3"
+          />
           <Link to="/products">
-            <Button variant="primary">Ver Todos los Productos</Button>
+            <Button variant="primary" className="mt-3">Ver Todos los Productos</Button>
           </Link>
         </Col>
       </Row>
       {error && <Alert variant="danger">{error}</Alert>}
       <Row>
-        {featuredProducts.length === 0 ? (
+        {filteredProducts.length === 0 ? (
           <Col>
             <p>No hay productos disponibles en este momento.</p>
           </Col>
         ) : (
-          featuredProducts.map(product => (
+          filteredProducts.map(product => (
             <Col key={product._id} md={4} className="mb-4">
               <Card>
                 <Card.Img variant="top" src={product.image} alt={product.name} />
