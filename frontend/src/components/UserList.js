@@ -1,6 +1,8 @@
+// UserList.js
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Modal, Button, Form } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 
 const UserList = () => {
   const [users, setUsers] = useState([]);
@@ -10,6 +12,8 @@ const UserList = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isAdmin, setIsAdmin] = useState(false);
+  
+  const navigate = useNavigate(); // Hook para la navegación
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -69,14 +73,12 @@ const UserList = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      // Actualizar la lista de usuarios después de la actualización
       setUsers(users.map(user =>
         user._id === selectedUser
           ? { ...user, name, email, isAdmin }
           : user
       ));
 
-      // Cerrar el modal
       setShowModal(false);
     } catch (error) {
       console.error('Error updating user:', error);
@@ -89,6 +91,10 @@ const UserList = () => {
     setEmail(user.email);
     setIsAdmin(user.isAdmin);
     setShowModal(true);
+  };
+
+  const handleViewOrders = (email) => {
+    navigate(`/orders/${encodeURIComponent(email)}`); // Navegar al componente OrderList con el email como parámetro
   };
 
   return (
@@ -104,6 +110,7 @@ const UserList = () => {
                 <p className="card-text"><strong>Admin:</strong> {user.isAdmin ? 'Sí' : 'No'}</p>
                 <Button variant="danger" onClick={() => handleDelete(user._id)}>Eliminar</Button>
                 <Button variant="primary" className="ml-2" onClick={() => openUpdateModal(user)}>Actualizar</Button>
+                <Button variant="info" className="ml-2" onClick={() => handleViewOrders(user.email)}>Ver Órdenes</Button>
               </div>
             </div>
           </div>

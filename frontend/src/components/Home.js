@@ -8,6 +8,7 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [isAdmin, setIsAdmin] = useState(false);
+  const [quantities, setQuantities] = useState({});
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -36,6 +37,13 @@ const Home = () => {
     }
   }, [location.search]);
 
+  const handleQuantityChange = (productId, delta) => {
+    setQuantities(prevQuantities => ({
+      ...prevQuantities,
+      [productId]: Math.max((prevQuantities[productId] || 1) + delta, 1)
+    }));
+  };
+
   const handleAddToCart = (product) => {
     const token = localStorage.getItem('token');
 
@@ -45,12 +53,20 @@ const Home = () => {
       return;
     }
 
+    const quantity = quantities[product._id] || 1;
     let cart = JSON.parse(localStorage.getItem('cart')) || [];
-    cart.push(product);
+    
+    // Remove the product if already in the cart
+    cart = cart.filter(item => item._id !== product._id);
+    
+    // Add the product with the specified quantity
+    for (let i = 0; i < quantity; i++) {
+      cart.push(product);
+    }
+    
     localStorage.setItem('cart', JSON.stringify(cart));
     alert('Producto agregado al carrito');
-    window.location.reload(); 
-
+    setQuantities(prevQuantities => ({ ...prevQuantities, [product._id]: 1 }));
   };
 
   const handleUpdateProduct = (productId) => {
@@ -116,12 +132,17 @@ const Home = () => {
                       </Button>
                     </>
                   ) : (
-                    <Button
-                      variant="outline-primary"
-                      onClick={() => handleAddToCart(product)}
-                    >
-                      Añadir al Carrito
-                    </Button>
+                    <div>
+                      <Button variant="outline-secondary" onClick={() => handleQuantityChange(product._id, -1)}>-</Button>
+                      <span className="mx-2">{quantities[product._id] || 1}</span>
+                      <Button variant="outline-secondary" onClick={() => handleQuantityChange(product._id, 1)}>+</Button>
+                      <Button
+                        variant="outline-primary"
+                        onClick={() => handleAddToCart(product)}
+                      >
+                        Añadir al Carrito
+                      </Button>
+                    </div>
                   )}
                 </Card.Body>
               </Card>

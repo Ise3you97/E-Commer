@@ -13,6 +13,8 @@ import AdminProducts from './components/AdminProducts';
 import EditProduct from './components/EditProduct';
 import UserList from './components/UserList';
 import ProductsByTag from './components/ProductsByTag';
+import AdminOrders from './components/AdminOrders';
+import OrderList from './components/OrderList';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 // Componente para manejar rutas no encontradas
@@ -35,7 +37,9 @@ function App() {
         <Route path="/products/tag/:tag" element={<ProductsByTag />} />
         <Route path="/admin/products/:id/edit" element={<EditProduct />} /> {/* Asegúrate de que esto coincida con el controlador */}
         <Route path="/admin-products" element={<AdminProducts />} />
+        <Route path="/admin-orders" element={<AdminOrders />} /> {/* Nueva ruta */}
         <Route path="*" element={<NotFound />} /> {/* Manejo de rutas no encontradas */}
+        <Route path="/orders/:email" element={<OrderList />} />
       </Routes>
     </Router>
   );

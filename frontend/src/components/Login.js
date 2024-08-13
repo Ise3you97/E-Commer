@@ -10,12 +10,13 @@ function Login() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        axios.post("http://localhost:4000/api/auth/login", { email, password })
+        axios.post("http://localhost:4000/api/auth/login", { email ,password })
             .then(result => {
                 if (result.data.token) {
                     // Almacena el token, el nombre del usuario y si es admin en el almacenamiento local
                     localStorage.setItem('token', result.data.token);
-                    localStorage.setItem('username', result.data.user.email);
+                    localStorage.setItem('username', result.data.user.name);
+                    localStorage.setItem('email', result.data.user.email);
                     localStorage.setItem('isAdmin', result.data.user.isAdmin); // Guardar isAdmin
 
                     if (result.data.user.isAdmin) {

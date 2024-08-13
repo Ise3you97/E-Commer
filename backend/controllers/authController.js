@@ -13,48 +13,48 @@ exports.register = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
 exports.login = async (req, res) => {
-    const { email, password } = req.body;
+  const { email, password } = req.body;
 
-    // Verifica si los campos están completos
-    if (!email || !password) {
-        return res.status(400).json({ message: 'Todos los campos son obligatorios' });
-    }
+  // Verifica si los campos están completos
+  if (!email || !password) {
+      return res.status(400).json({ message: 'Todos los campos son obligatorios' });
+  }
 
-    try {
-        // Busca al usuario por email
-        const user = await User.findOne({ email });
-        if (!user) {
-            return res.status(400).json({ message: 'Usuario no encontrado' });
-        }
+  try {
+      // Busca al usuario por email
+      const user = await User.findOne({ email });
+      if (!user) {
+          return res.status(400).json({ message: 'Usuario no encontrado' });
+      }
 
-        // Compara la contraseña proporcionada con la almacenada
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-            return res.status(400).json({ message: 'Contraseña incorrecta' });
-        }
+      // Compara la contraseña proporcionada con la almacenada
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+          return res.status(400).json({ message: 'Contraseña incorrecta' });
+      }
 
-        // Genera el token JWT
-        const token = jwt.sign(
-            { userId: user._id, isAdmin: user.isAdmin },
-            process.env.JWT_SECRET,
-            { expiresIn: '7d' }
-        );
+      // Genera el token JWT
+      const token = jwt.sign(
+          { userId: user._id, isAdmin: user.isAdmin },
+          process.env.JWT_SECRET,
+          { expiresIn: '7d' }
+      );
 
-        // Responde con el token y un mensaje de éxito
-        res.json({
-            message: "Login exitoso",
-            token,
-            user: {
-                id: user._id,
-                email: user.email,
-                isAdmin: user.isAdmin
-            }
-        });
-    } catch (error) {
-        res.status(500).json({ message: "Error interno del servidor", error: error.message });
-    }
+      // Responde con el token, nombre y un mensaje de éxito
+      res.json({
+          message: "Login exitoso",
+          token,
+          user: {
+              id: user._id,
+              name: user.name,  // Incluye el nombre del usuario en la respuesta
+              email: user.email,
+              isAdmin: user.isAdmin
+          }
+      });
+  } catch (error) {
+      res.status(500).json({ message: "Error interno del servidor", error: error.message });
+  }
 };
 
 

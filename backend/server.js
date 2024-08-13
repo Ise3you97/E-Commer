@@ -21,6 +21,7 @@ mongoose.connect(process.env.MONGO_URI, {
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/products', require('./routes/products'));
 app.use('/api/orders', require('./routes/orders'));
+app.use('/api/checkout', require('./routes/checkoutRoutes'));
 
 // Iniciar el servidor
 app.listen(PORT, () => {

@@ -58,9 +58,14 @@ const NavigationBar = () => {
                                 <Nav.Link>{isAdmin ? "Admin Products" : "Productos"}</Nav.Link>
                             </LinkContainer>
                             {isAdmin && (
-                                <LinkContainer to="/userlist">
-                                    <Nav.Link>Usuarios</Nav.Link>
-                                </LinkContainer>
+                                <>
+                                    <LinkContainer to="/userlist">
+                                        <Nav.Link>Usuarios</Nav.Link>
+                                    </LinkContainer>
+                                    <LinkContainer to="/admin-orders">
+                                        <Nav.Link>Orders</Nav.Link>
+                                    </LinkContainer>
+                                </>
                             )}
                         </Nav>
                         <Nav className="ms-auto">
@@ -79,15 +84,18 @@ const NavigationBar = () => {
                                     </LinkContainer>
                                 </>
                             )}
-                            <Button variant="outline-secondary" onClick={handleCartOpen} className="position-relative">
-                                🛒
-                                <i className='bi bi-cart'></i>
-                                {cartCount > 0 && (
-                                    <Badge className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                        {cartCount}
-                                    </Badge>
-                                )}
-                            </Button>
+                            {/* Mostrar el carrito solo si el usuario no es admin */}
+                            {!isAdmin && (
+                                <Button variant="outline-secondary" onClick={handleCartOpen} className="position-relative">
+                                    🛒
+                                    <i className='bi bi-cart'></i>
+                                    {cartCount > 0 && (
+                                        <Badge className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                            {cartCount}
+                                        </Badge>
+                                    )}
+                                </Button>
+                            )}
                         </Nav>
                     </Navbar.Collapse>
                 </Container>
