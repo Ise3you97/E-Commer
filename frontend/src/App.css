@@ -1,20 +1,180 @@
-/* src/App.css */
-h1 {
-  color: #333;
-  margin-bottom: 20px;
+/* App.css */
+
+/* Aplicar fondo global a toda la aplicación */
+body {
+  background: #f0f0f0;
+  min-height: 100vh; /* Asegura que el fondo cubra toda la altura de la ventana */
 }
 
-p {
-  font-size: 1.2rem;
-  color: #555;
+/* Estilos para botones y llamadas a la acción */
+.btn-primary {
+  background-color: #ff7043; /* Naranja vibrante para botones principales */
+  border: none;
+}
+
+.btn-primary:hover {
+  background-color: #ff5722; /* Color naranja más oscuro al pasar el cursor */
+}
+
+.btn-outline-primary {
+  border-color: #ff7043; /* Borde de botón en naranja */
+}
+
+.btn-outline-primary:hover {
+  background-color: #ff7043; /* Fondo naranja al pasar el cursor */
+  color: white; /* Texto blanco en el fondo naranja */
+}
+
+/* Estilos para enlaces */
+a {
+  color: #00796b; /* Azul oscuro para enlaces */
+}
+
+a:hover {
+  color: #004d40; /* Azul más oscuro al pasar el cursor */
+}
+
+/* Estilos para las tarjetas de producto */
+.card {
+  border-radius: 15px; /* Bordes redondeados para las tarjetas */
+  background-color: #f5f5f5; /* Fondo blanco moderno para las tarjetas */
+  border: 1px solid #ddd; /* Borde gris claro */
+}
+
+.card-body {
+  padding: 15px;
 }
 
 .card-title {
-  font-size: 1.25rem;
-  font-weight: bold;
+  color: #00796b; /* Azul oscuro para los títulos */
 }
 
 .card-text {
+  color: #555; /* Gris oscuro para el texto de la tarjeta */
+}
+
+/* NavigationBar.css */
+.navbar {
+  position: fixed; /* Hace que la barra de navegación sea fija */
+  top: 0; /* Fija la barra en la parte superior */
+  width: 100%; /* Ocupa todo el ancho de la pantalla */
+  z-index: 1000; /* Asegura que la barra de navegación esté por encima de otros elementos */
+  background-color: #ffffff; /* Fondo blanco */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Sombra para darle un poco de profundidad */
+}
+
+body {
+  padding-top: 56px; /* Ajusta este valor según la altura de tu barra de navegación para evitar que el contenido se superponga */
+}
+
+.card-hover {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+
+/* Estilos para el modal */
+.modal-dialog {
+  max-width: 600px; /* Ajusta el ancho máximo del modal */
+  margin: 30px auto; /* Centra el modal verticalmente y horizontalmente */
+}
+
+.modal-header {
+  background-color: #f8f9fa; /* Color de fondo claro */
+  border-bottom: 1px solid #dee2e6; /* Borde inferior sutil */
+  border-top-left-radius: 10px; /* Bordes redondeados */
+  border-top-right-radius: 10px; /* Bordes redondeados */
+}
+
+.modal-title {
+  font-size: 1.5rem; /* Tamaño de fuente grande */
+  font-weight: 600; /* Negrita */
+}
+
+.modal-body {
+  background-color: #ffffff; /* Fondo blanco */
+  padding: 20px; /* Espaciado interno */
+}
+
+.modal-footer {
+  background-color: #f8f9fa; /* Fondo claro */
+  border-top: 1px solid #dee2e6; /* Borde superior sutil */
+  border-bottom-left-radius: 10px; /* Bordes redondeados */
+  border-bottom-right-radius: 10px; /* Bordes redondeados */
+}
+
+.d-flex {
+  margin-bottom: 15px; /* Espaciado entre los elementos */
+}
+
+.img-thumbnail {
+  border: 1px solid #dee2e6; /* Borde sutil alrededor de la imagen */
+  border-radius: 10px; /* Bordes redondeados para la imagen */
+  object-fit: cover; /* Ajuste de imagen */
+}
+
+.btn-primary {
+  background-color: #007bff; /* Color principal */
+  border: none; /* Elimina el borde predeterminado */
+  border-radius: 5px; /* Bordes redondeados */
+}
+
+.btn-primary:hover {
+  background-color: #0056b3; /* Color más oscuro al pasar el cursor */
+}
+
+.btn-danger {
+  background-color: #dc3545; /* Color para el botón de eliminar */
+  border: none; /* Elimina el borde predeterminado */
+  border-radius: 5px; /* Bordes redondeados */
+}
+
+.btn-danger:hover {
+  background-color: #c82333; /* Color más oscuro al pasar el cursor */
+}
+
+
+/* Estilos generales para el contenedor de login y signup */
+.bg-light {
+  background-color: #f8f9fa !important;
+}
+
+.card {
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-body {
+  padding: 2rem;
+}
+
+h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+button {
   font-size: 1rem;
-  color: #777;
+  font-weight: 600;
+}
+
+.form-control {
+  border-radius: 0.375rem;
+}
+
+.form-check-input {
+  margin-right: 0.5rem;
+}
+
+a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
 }

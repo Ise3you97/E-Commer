@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from 'axios';
-import { useNavigate } from "react-router-dom";
+import { Form, Button, Card } from 'react-bootstrap';
 
 function Login() {    
     const [email, setEmail] = useState('');
@@ -13,60 +13,55 @@ function Login() {
         axios.post("http://localhost:4000/api/auth/login", { email, password })
             .then(result => {
                 if (result.data.token) {
-                    // Almacena el token, el nombre del usuario y si es admin en el almacenamiento local
+                    // Almacena el token y la información del usuario en el almacenamiento local
                     localStorage.setItem('token', result.data.token);
-                    localStorage.setItem('username', result.data.user.email);
-                    localStorage.setItem('isAdmin', result.data.user.isAdmin); // Guardar isAdmin
+                    localStorage.setItem('username', result.data.user.name);
+                    localStorage.setItem('email', result.data.user.email);
+                    localStorage.setItem('isAdmin', result.data.user.isAdmin);
 
-                    if (result.data.user.isAdmin) {
-                        navigate("/");
-                    } else {
-                        navigate("/");
-                    }
+                    navigate(result.data.user.isAdmin ? "/" : "/");
                 } else {
                     alert("Login fallido: " + result.data.message);
                 }
             })
             .catch(err => {
-                if (err.response) {
-                    console.log('Error data:', err.response.data); 
-                    console.log('Error status:', err.response.status); 
-                    console.log('Error headers:', err.response.headers); 
-                } else {
-                    console.log(err); 
-                }
+                console.error('Error:', err);
+                alert('Error en el login.');
             });
     };
 
     return (
-        <div className="d-flex justify-content-center align-items-center bg-secondary vh-100">
-            <div className="bg-white p-3 rounded w-25">
-                <h2><center>Login</center></h2>
-                <form onSubmit={handleSubmit}>
-                    <div className="mb-3">
-                        <label htmlFor="email"><strong>Email</strong></label>
-                        <input type="text" 
-                            placeholder='Enter Email' 
-                            autoComplete='off' 
-                            name='email' 
-                            className='form-control rounded-0' 
-                            onChange={(e) => setEmail(e.target.value)}
-                        />
-                    </div>
-                    <div className="mb-3">
-                        <label htmlFor="password"><strong>Password</strong></label>
-                        <input type="password" 
-                            placeholder='Enter Password' 
-                            name='password' 
-                            className='form-control rounded-0' 
-                            onChange={(e) => setPassword(e.target.value)}
-                        />
-                    </div>
-                    <button type="submit" className="btn btn-success w-100 rounded-0">Login</button>
-                </form>
-                <p>Don't have an account?</p>
-                <Link to="/register" className="btn btn-default border w-100 bg-light rounded-0 text-decoration-none">Sign Up</Link>
-            </div>
+        <div className="d-flex justify-content-center align-items-center bg-light vh-100">
+            <Card className="p-4 rounded shadow" style={{ width: '100%', maxWidth: '400px' }}>
+                <Card.Body>
+                    <h2 className="text-center mb-4">Login</h2>
+                    <Form onSubmit={handleSubmit}>
+                        <Form.Group controlId="formEmail" className="mb-3">
+                            <Form.Label>Email</Form.Label>
+                            <Form.Control 
+                                type="email" 
+                                placeholder="Enter Email" 
+                                autoComplete="off" 
+                                onChange={(e) => setEmail(e.target.value)}
+                            />
+                        </Form.Group>
+                        <Form.Group controlId="formPassword" className="mb-4">
+                            <Form.Label>Password</Form.Label>
+                            <Form.Control 
+                                type="password" 
+                                placeholder="Enter Password" 
+                                onChange={(e) => setPassword(e.target.value)}
+                            />
+                        </Form.Group>
+                        <Button variant="success" type="submit" className="w-100">
+                            Login
+                        </Button>
+                    </Form>
+                    <p className="mt-3 text-center">
+                        Don't have an account? <Link to="/register">Sign Up</Link>
+                    </p>
+                </Card.Body>
+            </Card>
         </div>
     );
 }

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Modal, Button, Form } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
+import { FaTrashAlt, FaEdit, FaShoppingCart } from 'react-icons/fa'; // Importar íconos de react-icons
 
 const UserList = () => {
   const [users, setUsers] = useState([]);
@@ -10,6 +12,8 @@ const UserList = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isAdmin, setIsAdmin] = useState(false);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -34,6 +38,11 @@ const UserList = () => {
   }, []);
 
   const handleDelete = async (id) => {
+    const confirmDelete = window.confirm('¿Estás seguro de que deseas eliminar este usuario? Esta acción no se puede deshacer.');
+    if (!confirmDelete) {
+      return;
+    }
+
     try {
       const token = localStorage.getItem('token');
       if (!token) {
@@ -69,14 +78,12 @@ const UserList = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      // Actualizar la lista de usuarios después de la actualización
       setUsers(users.map(user =>
         user._id === selectedUser
           ? { ...user, name, email, isAdmin }
           : user
       ));
 
-      // Cerrar el modal
       setShowModal(false);
     } catch (error) {
       console.error('Error updating user:', error);
@@ -91,19 +98,32 @@ const UserList = () => {
     setShowModal(true);
   };
 
+  const handleViewOrders = (email) => {
+    navigate(`/orders/${encodeURIComponent(email)}`);
+  };
+
   return (
-    <div className="container mt-5">
-      <h2>Lista de Usuarios</h2>
+    <div className="container mt-5" style={{height:'100vh'}}>
+      <h2 className="mb-4 text-center">Lista de Usuarios</h2>
       <div className="row">
         {users.map((user) => (
           <div className="col-md-4" key={user._id}>
-            <div className="card mb-3">
+            <div className="card mb-4 shadow-sm border-0 rounded-lg">
               <div className="card-body">
                 <h5 className="card-title">{user.name}</h5>
                 <p className="card-text"><strong>Email:</strong> {user.email}</p>
                 <p className="card-text"><strong>Admin:</strong> {user.isAdmin ? 'Sí' : 'No'}</p>
-                <Button variant="danger" onClick={() => handleDelete(user._id)}>Eliminar</Button>
-                <Button variant="primary" className="ml-2" onClick={() => openUpdateModal(user)}>Actualizar</Button>
+                <div className="d-flex justify-content-between">
+                  <Button variant="danger" onClick={() => handleDelete(user._id)}>
+                    <FaTrashAlt /> Eliminar
+                  </Button>
+                  <Button variant="primary" onClick={() => openUpdateModal(user)}>
+                    <FaEdit /> Actualizar
+                  </Button>
+                  <Button variant="info" onClick={() => handleViewOrders(user.email)}>
+                    <FaShoppingCart /> Ver Órdenes
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
@@ -111,13 +131,13 @@ const UserList = () => {
       </div>
 
       {/* Modal para actualizar usuario */}
-      <Modal show={showModal} onHide={() => setShowModal(false)}>
+      <Modal show={showModal} onHide={() => setShowModal(false)} centered>
         <Modal.Header closeButton>
           <Modal.Title>Actualizar Usuario</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form onSubmit={handleUpdate}>
-            <Form.Group controlId="formName">
+            <Form.Group controlId="formName" className="mb-3">
               <Form.Label>Nombre</Form.Label>
               <Form.Control
                 type="text"
@@ -126,7 +146,7 @@ const UserList = () => {
                 required
               />
             </Form.Group>
-            <Form.Group controlId="formEmail">
+            <Form.Group controlId="formEmail" className="mb-3">
               <Form.Label>Email</Form.Label>
               <Form.Control
                 type="email"
@@ -135,18 +155,16 @@ const UserList = () => {
                 required
               />
             </Form.Group>
-            <Form.Group controlId="formPassword">
+            <Form.Group controlId="formPassword" className="mb-3">
               <Form.Label>Contraseña</Form.Label>
               <Form.Control
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                placeholder="Deja en blanco si no deseas cambiar la contraseña"
               />
-              <Form.Text className="text-muted">
-                Deja en blanco si no deseas cambiar la contraseña.
-              </Form.Text>
             </Form.Group>
-            <Form.Group controlId="formIsAdmin">
+            <Form.Group controlId="formIsAdmin" className="mb-3">
               <Form.Check
                 type="checkbox"
                 label="Administrador"
@@ -154,7 +172,7 @@ const UserList = () => {
                 onChange={(e) => setIsAdmin(e.target.checked)}
               />
             </Form.Group>
-            <Button variant="primary" type="submit">
+            <Button variant="primary" type="submit" className="w-100">
               Actualizar Usuario
             </Button>
           </Form>

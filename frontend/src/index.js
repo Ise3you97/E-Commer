@@ -1,14 +1,14 @@
-// index.js
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import { AuthProvider } from './context/AuthContext';
 import App from './App';
 
+// Obtén el elemento root desde el HTML
 const root = ReactDOM.createRoot(document.getElementById('root'));
+
+// Renderiza el componente App dentro del elemento root
 root.render(
-  
-    <AuthProvider>
-      <App />
-    </AuthProvider>
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
 );

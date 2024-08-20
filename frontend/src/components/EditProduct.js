@@ -8,10 +8,13 @@ const EditProduct = () => {
   const [image, setImage] = useState('');
   const [price, setPrice] = useState('');
   const [description, setDescription] = useState('');
+  const [tag, setTag] = useState(''); // Agregar estado para el tag
+  
   const navigate = useNavigate();
+  console.log('este es el id ', productId);
 
   useEffect(() => {
-    // Cargar los detalles del producto existente para prellenar el formulario
+    console.log('Product ID:', productId); // Verifica el ID aquí
     const fetchProduct = async () => {
       try {
         const { data } = await axios.get(`http://localhost:4000/api/products/${productId}`);
@@ -19,13 +22,19 @@ const EditProduct = () => {
         setImage(data.image);
         setPrice(data.price);
         setDescription(data.description);
+        setTag(data.tag); // Rellenar el campo de tag
       } catch (error) {
         console.error('Error fetching product details:', error);
       }
     };
-
-    fetchProduct();
+  
+    if (productId) {
+      fetchProduct();
+    } else {
+      console.error('Product ID is not defined.');
+    }
   }, [productId]);
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -54,6 +63,7 @@ const EditProduct = () => {
           image,
           price,
           description,
+          tag, // Incluir el tag en el objeto de actualización
         },
         config // Pasar la configuración con los encabezados
       );
@@ -107,6 +117,20 @@ const EditProduct = () => {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
+        </div>
+        <div className="mb-3">
+          <label htmlFor="tag" className="form-label">Etiqueta</label>
+          <select
+            className="form-control"
+            id="tag"
+            value={tag}
+            onChange={(e) => setTag(e.target.value)}
+          >
+            <option value="">Seleccione una etiqueta</option>
+            <option value="Whisky">Whisky</option>
+            <option value="Tequila">Tequila</option>
+            <option value="Vino">Vino</option>
+          </select>
         </div>
         <button type="submit" className="btn btn-primary">Actualizar Producto</button>
       </form>

@@ -3,6 +3,7 @@ import { Navbar, Nav, Container, Button, Badge } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import Cart from './Cart';
+import './Css/NavigationBar.css';
 
 const NavigationBar = () => {
     const [showCart, setShowCart] = useState(false);
@@ -42,8 +43,8 @@ const NavigationBar = () => {
     };
 
     return (
-        <>
-            <Navbar bg="light" expand="lg">
+        <div className='navbar'>
+            <Navbar >
                 <Container>
                     <LinkContainer to="/">
                         <Navbar.Brand>Mi Tienda</Navbar.Brand>
@@ -58,9 +59,14 @@ const NavigationBar = () => {
                                 <Nav.Link>{isAdmin ? "Admin Products" : "Productos"}</Nav.Link>
                             </LinkContainer>
                             {isAdmin && (
-                                <LinkContainer to="/userlist">
-                                    <Nav.Link>Usuarios</Nav.Link>
-                                </LinkContainer>
+                                <>
+                                    <LinkContainer to="/userlist">
+                                        <Nav.Link>Usuarios</Nav.Link>
+                                    </LinkContainer>
+                                    <LinkContainer to="/admin-orders">
+                                        <Nav.Link>Orders</Nav.Link>
+                                    </LinkContainer>
+                                </>
                             )}
                         </Nav>
                         <Nav className="ms-auto">
@@ -79,15 +85,18 @@ const NavigationBar = () => {
                                     </LinkContainer>
                                 </>
                             )}
-                            <Button variant="outline-secondary" onClick={handleCartOpen} className="position-relative">
-                                🛒
-                                <i className='bi bi-cart'></i>
-                                {cartCount > 0 && (
-                                    <Badge className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                        {cartCount}
-                                    </Badge>
-                                )}
-                            </Button>
+                            {/* Mostrar el carrito solo si el usuario no es admin */}
+                            {!isAdmin && (
+                                <Button variant="outline-secondary" onClick={handleCartOpen} className="position-relative">
+                                    🛒
+                                    <i className='bi bi-cart'></i>
+                                    {cartCount > 0 && (
+                                        <Badge className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                            {cartCount}
+                                        </Badge>
+                                    )}
+                                </Button>
+                            )}
                         </Nav>
                     </Navbar.Collapse>
                 </Container>
@@ -95,7 +104,7 @@ const NavigationBar = () => {
 
             {/* Modal del carrito */}
             <Cart show={showCart} handleClose={handleCartClose} updateCartCount={updateCartCount} />
-        </>
+        </div>
     );
 };
 

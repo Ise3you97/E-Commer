@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Button } from 'react-bootstrap';
+import { Modal, Button, Stack } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 
 const Cart = ({ show, handleClose, updateCartCount }) => {
   const [cartItems, setCartItems] = useState([]);
@@ -10,27 +9,41 @@ const Cart = ({ show, handleClose, updateCartCount }) => {
 
   useEffect(() => {
     const cart = JSON.parse(localStorage.getItem('cart')) || [];
-    setCartItems(cart);
+    setCartItems(groupByProduct(cart));
     updateCartCount(cart.length); // Actualizar el número de productos en el carrito
   }, [updateCartCount]);
 
-  const removeFromCart = (index) => {
+  // Agrupar artículos por nombre y contar la cantidad
+  const groupByProduct = (items) => {
+    const groupedItems = items.reduce((acc, item) => {
+      const existingItem = acc.find(i => i.name === item.name);
+      if (existingItem) {
+        existingItem.quantity += 1;
+      } else {
+        acc.push({ ...item, quantity: 1 });
+      }
+      return acc;
+    }, []);
+    return groupedItems;
+  };
+
+  const removeFromCart = (name) => {
     if (!token) {
       navigate('/login');
       return;
     }
-    const newCartItems = [...cartItems];
-    newCartItems.splice(index, 1);
-    setCartItems(newCartItems);
+    const updatedCart = JSON.parse(localStorage.getItem('cart')) || [];
+    const newCartItems = updatedCart.filter(item => item.name !== name);
     localStorage.setItem('cart', JSON.stringify(newCartItems));
+    setCartItems(groupByProduct(newCartItems));
     updateCartCount(newCartItems.length); // Actualizar el número de productos en el carrito
   };
 
   const getTotalPrice = () => {
-    return cartItems.reduce((total, item) => total + item.price, 0).toFixed(2);
+    return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0).toFixed(2);
   };
 
-  const handleCheckout = async () => {
+  const handleCheckout = () => {
     if (!token) {
       navigate('/login');
       return;
@@ -39,55 +52,42 @@ const Cart = ({ show, handleClose, updateCartCount }) => {
     const products = cartItems.map(item => ({
       name: item.name,
       price: item.price,
-      quantity: item.quantity || 1 // Asegúrate de manejar la cantidad si existe
+      quantity: item.quantity
     }));
     const totalAmount = getTotalPrice();
 
-    try {
-      const response = await axios.post(
-        'http://localhost:4000/api/orders', // Cambia la ruta a /api/orders
-        {
-          products,
-          totalAmount
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      );
-
-      console.log('Order created successfully:', response.data);
-      // Vacía el carrito y redirige a la página de confirmación
-      setCartItems([]);
-      localStorage.removeItem('cart');
-      updateCartCount(0);
-      navigate('/confirmation'); // Redirige a una página de confirmación
-    } catch (error) {
-      console.error('Order creation failed:', error);
-      // Manejar errores (mostrar mensaje al usuario, etc.)
-    }
+    navigate('/checkout', { state: { products, totalAmount } });
+    handleClose(); // Cierra el modal
   };
 
   return (
-    <Modal show={show} onHide={handleClose}>
+    <Modal show={show} onHide={handleClose} dialogClassName="modal-dialog">
       <Modal.Header closeButton>
-        <Modal.Title>Your Cart</Modal.Title>
+        <Modal.Title className="modal-title">Your Cart</Modal.Title>
       </Modal.Header>
-      <Modal.Body>
+      <Modal.Body className="modal-body">
         {cartItems.length === 0 ? (
           <p>Your cart is empty.</p>
         ) : (
           <div>
-            {cartItems.map((item, index) => (
-              <div key={index} className="mb-3">
-                <h5>{item.name}</h5>
-                <img src={item.image} alt={item.name} style={{ width: '100px', height: '100px' }} />
-                <p>${item.price}</p>
-                <Button variant="danger" onClick={() => removeFromCart(index)}>Remove</Button>
-              </div>
-            ))}
-            <h4>Total: ${getTotalPrice()}</h4>
+            <Stack gap={3}>
+              {cartItems.map((item, index) => (
+                <div key={index} className="d-flex align-items-center">
+                  <img 
+                    src={item.image} 
+                    alt={item.name} 
+                    className="img-thumbnail" 
+                  />
+                  <div className="ms-3"> {/* Añadido margen a la izquierda */}
+                    <h5>{item.name}</h5>
+                    <p>Price: ${item.price} x {item.quantity}</p>
+                    <p>Total: ${item.price * item.quantity}</p>
+                    <Button variant="danger" onClick={() => removeFromCart(item.name)}>Remove</Button>
+                  </div>
+                </div>
+              ))}
+            </Stack>
+            <h4 className="mt-3">Total: ${getTotalPrice()}</h4>
             <Button variant="primary" onClick={handleCheckout}>Proceed to Checkout</Button>
           </div>
         )}
