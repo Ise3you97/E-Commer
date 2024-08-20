@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Home from './components/Home';
 import ProductList from './components/ProductList';
 import ProductDetail from './components/ProductDetail';
@@ -15,7 +15,9 @@ import UserList from './components/UserList';
 import ProductsByTag from './components/ProductsByTag';
 import AdminOrders from './components/AdminOrders';
 import OrderList from './components/OrderList';
+import Footer from './components/Footer';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import './App.css'; // Importa el archivo CSS
 
 // Componente para manejar rutas no encontradas
 const NotFound = () => <div>404 - Página no encontrada</div>;
@@ -23,24 +25,27 @@ const NotFound = () => <div>404 - Página no encontrada</div>;
 function App() {
   return (
     <Router>
-      <NavigationBar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/products" element={<ProductList />} />
-        <Route path="/products/:id" element={<ProductDetail />} />
-        <Route path="/register" element={<Signup />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/cart" element={<Cart />} />
-        <Route path="/logout" element={<Logout />} />
-        <Route path="/checkout" element={<Checkout />} />
-        <Route path="/userlist" element={<UserList />} />
-        <Route path="/products/tag/:tag" element={<ProductsByTag />} />
-        <Route path="/admin/products/:id/edit" element={<EditProduct />} /> {/* Asegúrate de que esto coincida con el controlador */}
-        <Route path="/admin-products" element={<AdminProducts />} />
-        <Route path="/admin-orders" element={<AdminOrders />} /> {/* Nueva ruta */}
-        <Route path="*" element={<NotFound />} /> {/* Manejo de rutas no encontradas */}
-        <Route path="/orders/:email" element={<OrderList />} />
-      </Routes>
+      <div className="app-container">
+        <NavigationBar />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/products" element={<ProductList />} />
+          <Route path="/products/:id" element={<ProductDetail />} />
+          <Route path="/register" element={<Signup />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/logout" element={<Logout />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/userlist" element={<UserList />} />
+          <Route path="/products/tag/:tag" element={<ProductsByTag />} />
+          <Route path="/admin/products/:productId/edit" element={<EditProduct />} />
+          <Route path="/admin-products" element={<AdminProducts />} />
+          <Route path="/orders/:email" element={<OrderList />} />
+          <Route path="/admin-orders" element={<AdminOrders />} /> {/* Nueva ruta */}
+          <Route path="*" element={<NotFound />} /> {/* Manejo de rutas no encontradas */}
+        </Routes>
+        <Footer />
+      </div>
     </Router>
   );
 }

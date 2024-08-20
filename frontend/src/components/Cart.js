@@ -61,11 +61,11 @@ const Cart = ({ show, handleClose, updateCartCount }) => {
   };
 
   return (
-    <Modal show={show} onHide={handleClose}>
+    <Modal show={show} onHide={handleClose} dialogClassName="modal-dialog">
       <Modal.Header closeButton>
-        <Modal.Title>Your Cart</Modal.Title>
+        <Modal.Title className="modal-title">Your Cart</Modal.Title>
       </Modal.Header>
-      <Modal.Body>
+      <Modal.Body className="modal-body">
         {cartItems.length === 0 ? (
           <p>Your cart is empty.</p>
         ) : (
@@ -73,8 +73,12 @@ const Cart = ({ show, handleClose, updateCartCount }) => {
             <Stack gap={3}>
               {cartItems.map((item, index) => (
                 <div key={index} className="d-flex align-items-center">
-                  <img src={item.image} alt={item.name} style={{ width: '100px', height: '100px', marginRight: '10px' }} />
-                  <div>
+                  <img 
+                    src={item.image} 
+                    alt={item.name} 
+                    className="img-thumbnail" 
+                  />
+                  <div className="ms-3"> {/* Añadido margen a la izquierda */}
                     <h5>{item.name}</h5>
                     <p>Price: ${item.price} x {item.quantity}</p>
                     <p>Total: ${item.price * item.quantity}</p>

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Container, Row, Col, Card, Button, Alert, Form } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import OfferCarousel from './OfferCarousel'; // Asegúrate de que este archivo esté en la misma carpeta
 
 const Home = () => {
   const [featuredProducts, setFeaturedProducts] = useState([]);
@@ -35,7 +36,6 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
-    // Filter products based on search query
     if (searchQuery) {
       const lowercasedQuery = searchQuery.toLowerCase();
       const filtered = featuredProducts.filter(product =>
@@ -66,10 +66,8 @@ const Home = () => {
     const quantity = quantities[product._id] || 1;
     let cart = JSON.parse(localStorage.getItem('cart')) || [];
     
-    // Remove the product if already in the cart
     cart = cart.filter(item => item._id !== product._id);
     
-    // Add the product with the specified quantity
     for (let i = 0; i < quantity; i++) {
       cart.push(product);
     }
@@ -102,75 +100,88 @@ const Home = () => {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className="text-center mt-5">Cargando...</div>;
   }
 
   return (
-    <Container className="mt-5">
-      <Row className="text-center mb-4">
-        <Col>
-          <Form.Control
-            type="text"
-            placeholder="Buscar productos..."
-            value={searchQuery}
-            onChange={handleSearchChange}
-            className="mb-3"
-          />
-          <Link to="/products">
-            <Button variant="primary" className="mt-3">Ver Todos los Productos</Button>
-          </Link>
-        </Col>
-      </Row>
-      {error && <Alert variant="danger">{error}</Alert>}
-      <Row>
-        {filteredProducts.length === 0 ? (
+    <div className='home'>
+      <Container className="mt-5">
+        <Row>
           <Col>
-            <p>No hay productos disponibles en este momento.</p>
+            <OfferCarousel />
           </Col>
-        ) : (
-          filteredProducts.map(product => (
-            <Col key={product._id} md={4} className="mb-4">
-              <Card>
-                <Card.Img variant="top" src={product.image} alt={product.name} />
-                <Card.Body>
-                  <Card.Title>{product.name}</Card.Title>
-                  <Card.Text>{product.description}</Card.Text>
-                  <Card.Text><strong>${product.price}</strong></Card.Text>
-                  {isAdmin ? (
-                    <>
-                      <Button
-                        variant="outline-danger"
-                        onClick={() => handleDeleteProduct(product._id)}
-                      >
-                        Eliminar
-                      </Button>
-                      <Button
-                        variant="outline-secondary"
-                        onClick={() => handleUpdateProduct(product._id)}
-                      >
-                        Actualizar
-                      </Button>
-                    </>
-                  ) : (
-                    <div>
-                      <Button variant="outline-secondary" onClick={() => handleQuantityChange(product._id, -1)}>-</Button>
-                      <span className="mx-2">{quantities[product._id] || 1}</span>
-                      <Button variant="outline-secondary" onClick={() => handleQuantityChange(product._id, 1)}>+</Button>
-                      <Button
-                        variant="outline-primary"
-                        onClick={() => handleAddToCart(product)}
-                      >
-                        Añadir al Carrito
-                      </Button>
-                    </div>
-                  )}
-                </Card.Body>
-              </Card>
+        </Row>
+        <Row className="text-center mb-4 mt-5">
+          <Col>
+            <Form.Control
+              type="text"
+              placeholder="Buscar productos..."
+              value={searchQuery}
+              onChange={handleSearchChange}
+              className="mb-3"
+              style={{ maxWidth: '600px', margin: '0 auto' }}
+            />
+            <Link to="/products">
+              <Button variant="primary" className="mt-3 px-4 py-3 rounded-pill shadow">
+                Ver Todos los Productos
+              </Button>
+            </Link>
+          </Col>
+        </Row>
+        {error && <Alert variant="danger" className="text-center">{error}</Alert>}
+        <Row>
+          {filteredProducts.length === 0 ? (
+            <Col>
+              <p className="text-center">No hay productos disponibles en este momento.</p>
             </Col>
-          ))
-        )}
-      </Row>
-    </Container>
+          ) : (
+            filteredProducts.map(product => (
+              <Col key={product._id} md={4} className="mb-4">
+                <Card className="shadow-sm rounded border-light card-hover">
+                  <Card.Img variant="top" src={product.image} alt={product.name} style={{ height: '200px', objectFit: 'cover' }} />
+                  <Card.Body>
+                    <Card.Title className="text-primary">{product.name}</Card.Title>
+                    <Card.Text>{product.description}</Card.Text>
+                    <Card.Text><strong>${product.price}</strong></Card.Text>
+                    {isAdmin ? (
+                      <div className="d-flex justify-content-between">
+                        <Button
+                          variant="outline-danger"
+                          onClick={() => handleDeleteProduct(product._id)}
+                        >
+                          Eliminar
+                        </Button>
+                        <Button
+                          variant="outline-secondary"
+                          onClick={() => handleUpdateProduct(product._id)}
+                        >
+                          Actualizar
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="d-flex align-items-center justify-content-between">
+                        <div>
+                          <Button variant="outline-secondary" onClick={() => handleQuantityChange(product._id, -1)}>-</Button>
+                          <span className="mx-2">{quantities[product._id] || 1}</span>
+                          <Button variant="outline-secondary" onClick={() => handleQuantityChange(product._id, 1)}>+</Button>
+                        </div>
+                        <Button
+                          variant="primary"
+                          onClick={() => handleAddToCart(product)}
+                          className="ml-2"
+                        >
+                          Añadir al Carrito
+                        </Button>
+                      </div>
+                    )}
+                  </Card.Body>
+                </Card>
+              </Col>
+            ))
+          )}
+        </Row>
+      </Container>
+    </div>
   );
 };
 

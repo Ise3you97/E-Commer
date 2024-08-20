@@ -60,7 +60,7 @@ const ProductsByTag = () => {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className="text-center mt-5">Cargando...</div>;
   }
 
   return (
@@ -70,19 +70,37 @@ const ProductsByTag = () => {
       <Row>
         {products.map(product => (
           <Col key={product._id} md={4} className="mb-4">
-            <Card>
-              <Card.Img variant="top" src={product.image} alt={product.name} />
+            <Card className="shadow-sm rounded border-light card-hover">
+              <Card.Img 
+                variant="top" 
+                src={product.image} 
+                alt={product.name} 
+                style={{ height: '200px', objectFit: 'cover' }} 
+              />
               <Card.Body>
-                <Card.Title>{product.name}</Card.Title>
+                <Card.Title className="text-primary">{product.name}</Card.Title>
                 <Card.Text>{product.description}</Card.Text>
                 <Card.Text><strong>${product.price}</strong></Card.Text>
-                <div>
-                  <Button variant="outline-secondary" onClick={() => handleQuantityChange(product._id, -1)}>-</Button>
-                  <span className="mx-2">{quantities[product._id] || 1}</span>
-                  <Button variant="outline-secondary" onClick={() => handleQuantityChange(product._id, 1)}>+</Button>
+                <div className="d-flex align-items-center justify-content-between">
+                  <div>
+                    <Button 
+                      variant="outline-secondary" 
+                      onClick={() => handleQuantityChange(product._id, -1)}
+                    >
+                      -
+                    </Button>
+                    <span className="mx-2">{quantities[product._id] || 1}</span>
+                    <Button 
+                      variant="outline-secondary" 
+                      onClick={() => handleQuantityChange(product._id, 1)}
+                    >
+                      +
+                    </Button>
+                  </div>
                   <Button
-                    variant="outline-primary"
+                    variant="primary"
                     onClick={() => handleAddToCart(product)}
+                    className="ml-2"
                   >
                     Añadir al Carrito
                   </Button>

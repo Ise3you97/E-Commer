@@ -3,6 +3,7 @@ import { Navbar, Nav, Container, Button, Badge } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import Cart from './Cart';
+import './Css/NavigationBar.css';
 
 const NavigationBar = () => {
     const [showCart, setShowCart] = useState(false);
@@ -42,8 +43,8 @@ const NavigationBar = () => {
     };
 
     return (
-        <>
-            <Navbar bg="light" expand="lg">
+        <div className='navbar'>
+            <Navbar >
                 <Container>
                     <LinkContainer to="/">
                         <Navbar.Brand>Mi Tienda</Navbar.Brand>
@@ -103,7 +104,7 @@ const NavigationBar = () => {
 
             {/* Modal del carrito */}
             <Cart show={showCart} handleClose={handleCartClose} updateCartCount={updateCartCount} />
-        </>
+        </div>
     );
 };
 

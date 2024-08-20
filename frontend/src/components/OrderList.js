@@ -1,10 +1,10 @@
-// OrderList.js
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
+import { Card, Badge, Accordion } from 'react-bootstrap';
 
 const OrderList = () => {
-  const { email } = useParams(); // Obtén el email de la URL
+  const { email } = useParams();
   const [orders, setOrders] = useState([]);
 
   useEffect(() => {
@@ -35,25 +35,39 @@ const OrderList = () => {
       {orders.length === 0 ? (
         <p>No hay órdenes para este usuario.</p>
       ) : (
-        <ul className="list-group">
+        <div className="d-flex flex-wrap">
           {orders.map(order => (
-            <li key={order._id} className="list-group-item">
-              <h5>Pedido {order._id}</h5>
-              <p><strong>Nombre:</strong> {order.name}</p>
-              <p><strong>Dirección:</strong> {order.address}</p>
-              <p><strong>Total:</strong> ${order.totalAmount.toFixed(2)}</p>
-              <h6>Productos:</h6>
-              <ul>
-                {order.products.map((product, index) => (
-                  <li key={index}>
-                    {product.name} - ${product.price.toFixed(2)}
-                  </li>
-                ))}
-              </ul>
-              <p><small>Fecha de creación: {new Date(order.createdAt).toLocaleDateString()}</small></p>
-            </li>
+            <Card key={order._id} className="m-3 shadow-sm" style={{ width: '18rem', background: 'transparent', border: 'none' }}>
+              <Card.Header className="bg-primary text-white">
+                <h5>Pedido #{order._id}</h5>
+              </Card.Header>
+              <Card.Body>
+                <Card.Title>{order.name}</Card.Title>
+                <Card.Text>
+                  <strong>Dirección:</strong> {order.address}
+                </Card.Text>
+                <Accordion flush>
+                  <Accordion.Item eventKey="0">
+                    <Accordion.Header>Productos</Accordion.Header>
+                    <Accordion.Body>
+                      {order.products.map((product, index) => (
+                        <div key={index}>
+                          {product.name} - <Badge bg="success">${product.price.toFixed(2)}</Badge>
+                        </div>
+                      ))}
+                    </Accordion.Body>
+                  </Accordion.Item>
+                </Accordion>
+                <Card.Text className="mt-3">
+                  <strong>Total:</strong> <Badge bg="primary">${order.totalAmount.toFixed(2)}</Badge>
+                </Card.Text>
+              </Card.Body>
+              <Card.Footer>
+                <small className="text-muted">Fecha de creación: {new Date(order.createdAt).toLocaleDateString()}</small>
+              </Card.Footer>
+            </Card>
           ))}
-        </ul>
+        </div>
       )}
     </div>
   );

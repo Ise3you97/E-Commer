@@ -1,7 +1,6 @@
-// AdminOrders.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Container, ListGroup, Spinner, Alert } from 'react-bootstrap';
+import { Container, Card, Badge, ListGroup, Accordion, Spinner, Alert } from 'react-bootstrap';
 
 const AdminOrders = () => {
     const [orders, setOrders] = useState([]);
@@ -37,26 +36,38 @@ const AdminOrders = () => {
             {orders.length === 0 ? (
                 <p>No orders found.</p>
             ) : (
-                <ul className="list-group">
-                    {orders.map(order => (
-                        <li key={order._id} className="list-group-item">
-                            <h5>Order ID: {order._id}</h5>
-                            <p><strong>User:</strong> {order.email}</p>
-                            <p><strong>Name:</strong> {order.name}</p>
-                            <p><strong>Address:</strong> {order.address}</p>
-                            <p><strong>Total Amount:</strong> ${order.totalAmount.toFixed(2)}</p>
-                            <h6>Products:</h6>
-                            <ul>
-                                {order.products.map((product, index) => (
-                                    <li key={index}>
-                                        {product.name} - ${product.price.toFixed(2)}
-                                    </li>
-                                ))}
-                            </ul>
-                            <p><small>Created At: {new Date(order.createdAt).toLocaleDateString()}</small></p>
-                        </li>
+                <Accordion defaultActiveKey="0">
+                    {orders.map((order, index) => (
+                        <Card key={order._id} className="mb-3 shadow-sm">
+                            <Accordion.Item eventKey={index.toString()}>
+                                <Accordion.Header>
+                                    <strong>Order ID:</strong> {order._id} - <Badge bg="primary">${order.totalAmount.toFixed(2)}</Badge>
+                                </Accordion.Header>
+                                <Accordion.Body>
+                                    <Card.Body>
+                                        <Card.Title>User: {order.email}</Card.Title>
+                                        <Card.Text>
+                                            <strong>Name:</strong> {order.name}
+                                            <br />
+                                            <strong>Address:</strong> {order.address}
+                                        </Card.Text>
+                                        <h6>Products:</h6>
+                                        <ListGroup variant="flush">
+                                            {order.products.map((product, index) => (
+                                                <ListGroup.Item key={index}>
+                                                    {product.name} - <Badge bg="success">${product.price.toFixed(2)}</Badge>
+                                                </ListGroup.Item>
+                                            ))}
+                                        </ListGroup>
+                                    </Card.Body>
+                                    <Card.Footer>
+                                        <small className="text-muted">Created At: {new Date(order.createdAt).toLocaleDateString()}</small>
+                                    </Card.Footer>
+                                </Accordion.Body>
+                            </Accordion.Item>
+                        </Card>
                     ))}
-                </ul>
+                </Accordion>
             )}
         </Container>
     );

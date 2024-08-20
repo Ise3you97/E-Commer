@@ -1,0 +1,20 @@
+/* src/components/ProductList.css */
+.card-custom {
+    width: 100%;
+    max-width: 250px; /* Tamaño máximo reducido de la tarjeta */
+    margin: 0 auto; /* Centra la tarjeta horizontalmente */
+  }
+  
+  .card-custom .card-img-top {
+    height: 150px; /* Ajusta la altura de la imagen */
+    object-fit: cover; /* Asegura que la imagen cubra el área sin distorsión */
+  }
+  
+  .card-custom .card-body {
+    padding: 1rem; /* Ajusta el padding del cuerpo de la tarjeta */
+  }
+  
+  .card-custom .card-title {
+    font-size: 1rem; /* Ajusta el tamaño del texto del título */
+  }
+  

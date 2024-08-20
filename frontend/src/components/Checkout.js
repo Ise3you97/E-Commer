@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
-import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
+import { Elements, useStripe, useElements, CardNumberElement, CardExpiryElement, CardCvcElement } from '@stripe/react-stripe-js';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
+import { Form, Button, Row, Col, Card } from 'react-bootstrap';
 
 // Carga la clave pública de Stripe
 const stripePromise = loadStripe('pk_test_51Pn2MJA4rGsRdyPfDhf7c7ZpM4eDzR5WsWG2Ujn8QrroHi0Kfpj9emVP08SwsUAph1KSyuwNRow3UyJozhlYPvTm00z3iuZooM');
@@ -37,7 +38,7 @@ const CheckoutForm = () => {
     setLoading(true);
 
     // Crea un token de tarjeta con Stripe
-    const { token, error } = await stripe.createToken(elements.getElement(CardElement));
+    const { token, error } = await stripe.createToken(elements.getElement(CardNumberElement));
     if (error) {
       console.error(error);
       alert('Error al procesar el pago.');
@@ -75,13 +76,9 @@ const CheckoutForm = () => {
           },
         });
 
-        if (checkoutResponse.data.success) {
-          alert('Order placed successfully');
-          localStorage.removeItem('cart'); // Vacía el carrito después de la compra
-          window.location.href = '/';
-        } else {
-          alert('Error al procesar el pedido.');
-        }
+        alert('Order placed successfully');
+        localStorage.removeItem('cart'); // Vacía el carrito después de la compra
+        window.location.href = '/';
       } else {
         alert('Error al procesar el pago.');
       }
@@ -94,55 +91,137 @@ const CheckoutForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        <label>Name</label>
-        <input 
-          type="text" 
-          value={name} 
-          onChange={(e) => setName(e.target.value)} 
-          required 
-        />
-      </div>
-      <div>
-        <label>Address</label>
-        <input 
-          type="text" 
-          value={address} 
-          onChange={(e) => setAddress(e.target.value)} 
-          required 
-        />
-      </div>
-      <div>
-        <label>Card Details</label>
-        <CardElement />
-      </div>
-      <div>
-        <h3>Cart Summary</h3>
-        {cartItems.length === 0 ? (
-          <p>Your cart is empty.</p>
-        ) : (
-          <ul>
-            {cartItems.map((item, index) => (
-              <li key={index}>
-                <strong>{item.name}</strong> - ${item.price} x {item.quantity || 1}
-              </li>
-            ))}
-          </ul>
-        )}
-        <h4>Total Amount: ${totalAmount}</h4>
-      </div>
-      <button type="submit" disabled={loading}>
-        {loading ? 'Processing...' : 'Place Order'}
-      </button>
-    </form>
+    <Card className="p-4 shadow-sm" style={{ maxWidth: '800px', margin: 'auto', borderRadius: '10px', borderColor: '#f8f9fa' }}>
+      <Card.Body>
+        <Form onSubmit={handleSubmit}>
+          <Row>
+            {/* Columna Izquierda: Nombre, Dirección y Resumen del Carrito */}
+            <Col md={6}>
+              <Form.Group controlId="formName" className="mb-3">
+                <Form.Label>Name</Form.Label>
+                <Form.Control 
+                  type="text" 
+                  value={name} 
+                  onChange={(e) => setName(e.target.value)} 
+                  required 
+                  placeholder="Enter your name" 
+                />
+              </Form.Group>
+
+              <Form.Group controlId="formAddress" className="mb-3">
+                <Form.Label>Address</Form.Label>
+                <Form.Control 
+                  type="text" 
+                  value={address} 
+                  onChange={(e) => setAddress(e.target.value)} 
+                  required 
+                  placeholder="Enter your address" 
+                />
+              </Form.Group>
+
+              <div className="mb-4">
+                <h4>Cart Summary</h4>
+                {cartItems.length === 0 ? (
+                  <p>Your cart is empty.</p>
+                ) : (
+                  <ul className="list-group">
+                    {cartItems.map((item, index) => (
+                      <li key={index} className="list-group-item d-flex justify-content-between align-items-center">
+                        <span><strong>{item.name}</strong> - ${item.price} x {item.quantity || 1}</span>
+                        <span>${(item.price * (item.quantity || 1)).toFixed(2)}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                <h5 className="mt-3">Total Amount: ${totalAmount}</h5>
+              </div>
+            </Col>
+
+            {/* Columna Derecha: Detalles de Pago (Stripe) */}
+            <Col md={6}>
+              <div className="mb-3">
+                <Form.Label>Card Number</Form.Label>
+                <CardNumberElement 
+                  className="form-control"
+                  options={{
+                    style: {
+                      base: {
+                        fontSize: '16px',
+                        color: '#495057',
+                        '::placeholder': {
+                          color: '#6c757d',
+                        },
+                      },
+                      invalid: {
+                        color: '#dc3545',
+                      },
+                    },
+                  }} 
+                />
+              </div>
+              
+              <Row>
+                <Col md={6}>
+                  <div className="mb-3">
+                    <Form.Label>MM/YY</Form.Label>
+                    <CardExpiryElement 
+                      className="form-control" 
+                      options={{
+                        style: {
+                          base: {
+                            fontSize: '16px',
+                            color: '#495057',
+                            '::placeholder': {
+                              color: '#6c757d',
+                            },
+                          },
+                          invalid: {
+                            color: '#dc3545',
+                          },
+                        },
+                      }} 
+                    />
+                  </div>
+                </Col>
+                <Col md={6}>
+                  <div className="mb-3">
+                    <Form.Label>CVC</Form.Label>
+                    <CardCvcElement 
+                      className="form-control" 
+                      options={{
+                        style: {
+                          base: {
+                            fontSize: '16px',
+                            color: '#495057',
+                            '::placeholder': {
+                              color: '#6c757d',
+                            },
+                          },
+                          invalid: {
+                            color: '#dc3545',
+                          },
+                        },
+                      }} 
+                    />
+                  </div>
+                </Col>
+              </Row>
+              
+              <Button variant="primary" type="submit" disabled={loading} className="w-100 mt-3">
+                {loading ? 'Processing...' : 'Place Order'}
+              </Button>
+            </Col>
+          </Row>
+        </Form>
+      </Card.Body>
+    </Card>
   );
 };
 
 const Checkout = () => {
   return (
-    <div>
-      <h1>Checkout</h1>
+    <div className="checkout-container" style={{ padding: '30px', backgroundColor: '#f8f9fa' }}>
+      <h1 className="text-center mb-4">Checkout</h1>
       <Elements stripe={stripePromise}>
         <CheckoutForm />
       </Elements>
