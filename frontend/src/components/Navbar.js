@@ -1,20 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Navbar, Nav, Container, Button, Badge } from 'react-bootstrap';
+import { Navbar, Nav, Container, Button, Badge, Dropdown } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import Cart from './Cart';
-import './Css/NavigationBar.css';
 
 const NavigationBar = () => {
     const [showCart, setShowCart] = useState(false);
     const [cartCount, setCartCount] = useState(0);
+    const [isAdmin, setIsAdmin] = useState(localStorage.getItem('isAdmin') === 'true');
     const navigate = useNavigate();
     const token = localStorage.getItem('token');
     const username = localStorage.getItem('username');
-    const isAdmin = localStorage.getItem('isAdmin') === 'true';
 
     useEffect(() => {
-        // Actualizar la cantidad de productos en el carrito cuando se monta el componente
         const storedCart = JSON.parse(localStorage.getItem('cart')) || [];
         setCartCount(storedCart.length);
     }, []);
@@ -23,17 +21,13 @@ const NavigationBar = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('username');
         localStorage.removeItem('isAdmin');
-        localStorage.removeItem('cart'); // Eliminar el carrito al cerrar sesión
-        setCartCount(0); // Restablecer el contador del carrito
+        localStorage.removeItem('cart');
+        setCartCount(0);
         navigate("/login");
     };
 
     const handleCartOpen = () => {
-        if (!token) {
-            navigate("/login");
-        } else {
-            setShowCart(true);
-        }
+        setShowCart(true);
     };
 
     const handleCartClose = () => setShowCart(false);
@@ -42,13 +36,22 @@ const NavigationBar = () => {
         setCartCount(count);
     };
 
+    const toggleMode = () => {
+        const newMode = !isAdmin;
+        setIsAdmin(newMode);
+        localStorage.setItem('isAdmin', newMode.toString());
+        navigate(newMode ? "/admin-products" : "/products");
+    };
+
     return (
         <div className='navbar'>
-            <Navbar >
+            <Navbar>
+                {/* Texto "Tienda" a la izquierda del Navbar */}
+                <Navbar.Brand className="ms-3">
+                    Tienda
+                </Navbar.Brand>
+
                 <Container>
-                    <LinkContainer to="/">
-                        <Navbar.Brand>Mi Tienda</Navbar.Brand>
-                    </LinkContainer>
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="mr-auto">
@@ -56,7 +59,7 @@ const NavigationBar = () => {
                                 <Nav.Link>Inicio</Nav.Link>
                             </LinkContainer>
                             <LinkContainer to={isAdmin ? "/admin-products" : "/products"}>
-                                <Nav.Link>{isAdmin ? "Admin Products" : "Productos"}</Nav.Link>
+                                <Nav.Link>{isAdmin ? "Admin Products" : "Categorias"}</Nav.Link>
                             </LinkContainer>
                             {isAdmin && (
                                 <>
@@ -71,10 +74,16 @@ const NavigationBar = () => {
                         </Nav>
                         <Nav className="ms-auto">
                             {token ? (
-                                <>
-                                    <Nav.Link disabled>{`Hola, ${username}`}</Nav.Link>
-                                    <Nav.Link onClick={handleLogout}>Cerrar Sesión</Nav.Link>
-                                </>
+                                <Dropdown align="end">
+                                    <Dropdown.Toggle variant="link" id="dropdown-basic" className="text-dark">
+                                        <i className="bi bi-person-circle me-1"></i> {username}
+                                    </Dropdown.Toggle>
+                                    <Dropdown.Menu>
+                                        <Dropdown.Item onClick={handleLogout} className="text-danger">
+                                            <i className="bi bi-box-arrow-right me-2"></i>Cerrar Sesión
+                                        </Dropdown.Item>
+                                    </Dropdown.Menu>
+                                </Dropdown>
                             ) : (
                                 <>
                                     <LinkContainer to="/login">
@@ -85,7 +94,13 @@ const NavigationBar = () => {
                                     </LinkContainer>
                                 </>
                             )}
-                            {/* Mostrar el carrito solo si el usuario no es admin */}
+                            <Button 
+                                variant={isAdmin ? "danger" : "success"} 
+                                onClick={toggleMode} 
+                                className="mx-2"
+                            >
+                                {isAdmin ? "Modo Cliente" : "Modo Admin"}
+                            </Button>
                             {!isAdmin && (
                                 <Button variant="outline-secondary" onClick={handleCartOpen} className="position-relative">
                                     🛒

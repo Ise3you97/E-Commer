@@ -11,13 +11,11 @@ const OfferCarousel = () => {
   useEffect(() => {
     const fetchOffers = async () => {
       try {
-        const { data } = await axios.get("http://localhost:4000/api/offers");
+        const { data } = await axios.get("https://fakestoreapi.com/products?limit=5");
 
-        // Asegúrate de que data.offers sea un array
+        // Usar los datos directamente de la API
         if (Array.isArray(data)) {
           setOffers(data);
-        } else if (Array.isArray(data.offers)) {
-          setOffers(data.offers);
         } else {
           throw new Error("Formato de datos inesperado");
         }
@@ -45,23 +43,14 @@ const OfferCarousel = () => {
     return <Alert variant="danger">{error}</Alert>;
   }
 
-  // Verifica si offers es un array
-  if (!Array.isArray(offers)) {
-    return (
-      <Alert variant="danger">
-        Las ofertas no se pudieron cargar correctamente.
-      </Alert>
-    );
-  }
-
   return (
     <Carousel className="carousel">
-      {offers.slice(0, 3).map((offer) => (
-        <Carousel.Item key={offer._id}>
+      {offers.map((offer) => (
+        <Carousel.Item key={offer.id}>
           <h2 className="carousel-title">Offers</h2>
           <img className="d-block w-100" src={offer.image} alt={offer.title} />
           <Carousel.Caption>
-            <h2>{offer.name}</h2>
+            <h2>{offer.title}</h2>
             <p>{offer.description}</p>
           </Carousel.Caption>
         </Carousel.Item>

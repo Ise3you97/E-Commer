@@ -8,10 +8,38 @@ const Cart = ({ show, handleClose, updateCartCount }) => {
   const token = localStorage.getItem('token');
 
   useEffect(() => {
-    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    // Si el carrito está vacío, llena con productos falsos
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    if (cart.length === 0) {
+      cart = generateFakeProducts();
+    }
     setCartItems(groupByProduct(cart));
     updateCartCount(cart.length); // Actualizar el número de productos en el carrito
   }, [updateCartCount]);
+
+  // Función para generar productos falsos
+  const generateFakeProducts = () => {
+    return [
+      {
+        _id: '1',
+        name: 'Fake Product 1',
+        price: 10.00,
+        image: 'https://via.placeholder.com/150',
+      },
+      {
+        _id: '2',
+        name: 'Fake Product 2',
+        price: 20.00,
+        image: 'https://via.placeholder.com/150',
+      },
+      {
+        _id: '3',
+        name: 'Fake Product 3',
+        price: 30.00,
+        image: 'https://via.placeholder.com/150',
+      },
+    ];
+  };
 
   // Agrupar artículos por nombre y contar la cantidad
   const groupByProduct = (items) => {
@@ -28,10 +56,7 @@ const Cart = ({ show, handleClose, updateCartCount }) => {
   };
 
   const removeFromCart = (name) => {
-    if (!token) {
-      navigate('/login');
-      return;
-    }
+
     const updatedCart = JSON.parse(localStorage.getItem('cart')) || [];
     const newCartItems = updatedCart.filter(item => item.name !== name);
     localStorage.setItem('cart', JSON.stringify(newCartItems));
@@ -44,11 +69,7 @@ const Cart = ({ show, handleClose, updateCartCount }) => {
   };
 
   const handleCheckout = () => {
-    if (!token) {
-      navigate('/login');
-      return;
-    }
-
+    
     const products = cartItems.map(item => ({
       name: item.name,
       price: item.price,

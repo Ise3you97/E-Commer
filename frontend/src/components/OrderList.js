@@ -1,37 +1,41 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
 import { Card, Badge, Accordion } from 'react-bootstrap';
 
 const OrderList = () => {
-  const { email } = useParams();
   const [orders, setOrders] = useState([]);
 
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          console.error('No se encontró el token. Por favor, inicia sesión.');
-          return;
-        }
+        // Simulamos la obtención de datos de órdenes desde una API falsa
+        const { data } = await axios.get('https://jsonplaceholder.typicode.com/posts');
 
-        const { data } = await axios.get(`http://localhost:4000/api/orders/${email}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        // Aquí simulamos que cada post es una orden, y añadimos algunos detalles adicionales
+        const fakeOrders = data.map(post => ({
+          _id: post.id,
+          name: post.title,
+          address: `Calle Falsa ${post.id}, Ciudad Falsa`,
+          products: [
+            { name: 'Producto 1', price: Math.random() * 100 },
+            { name: 'Producto 2', price: Math.random() * 100 },
+          ],
+          totalAmount: Math.random() * 200,
+          createdAt: new Date().toISOString(),
+        }));
 
-        setOrders(data);
+        setOrders(fakeOrders);
       } catch (error) {
         console.error('Error fetching orders:', error);
       }
     };
 
     fetchOrders();
-  }, [email]);
+  }, []);
 
   return (
     <div className="container mt-5">
-      <h2>Órdenes de {email}</h2>
+      <h2>Órdenes Simuladas</h2>
       {orders.length === 0 ? (
         <p>No hay órdenes para este usuario.</p>
       ) : (

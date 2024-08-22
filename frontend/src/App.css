@@ -1,6 +1,7 @@
 /* App.css */
 
 /* Aplicar fondo global a toda la aplicación */
+
 body {
   background: #f0f0f0;
   min-height: 100vh; /* Asegura que el fondo cubra toda la altura de la ventana */

@@ -1,11 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useState } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import { FaTrashAlt, FaEdit, FaShoppingCart } from 'react-icons/fa'; // Importar íconos de react-icons
+import { FaTrashAlt, FaEdit, FaShoppingCart } from 'react-icons/fa';
 
 const UserList = () => {
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState([
+    { _id: '1', name: 'John Doe', email: 'john@example.com', isAdmin: true },
+    { _id: '2', name: 'Jane Smith', email: 'jane@example.com', isAdmin: false },
+    { _id: '3', name: 'Alice Johnson', email: 'alice@example.com', isAdmin: false },
+  ]);
+
   const [showModal, setShowModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [name, setName] = useState('');
@@ -15,79 +19,25 @@ const UserList = () => {
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          console.error('No se encontró el token. Por favor, inicia sesión.');
-          return;
-        }
-
-        const { data } = await axios.get('http://localhost:4000/api/auth/users', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        setUsers(data);
-      } catch (error) {
-        console.error('Error fetching users:', error);
-      }
-    };
-
-    fetchUsers();
-  }, []);
-
-  const handleDelete = async (id) => {
+  const handleDelete = (id) => {
     const confirmDelete = window.confirm('¿Estás seguro de que deseas eliminar este usuario? Esta acción no se puede deshacer.');
     if (!confirmDelete) {
       return;
     }
 
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        console.error('No se encontró el token. Por favor, inicia sesión.');
-        return;
-      }
-
-      await axios.delete(`http://localhost:4000/api/auth/users/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      setUsers(users.filter(user => user._id !== id));
-    } catch (error) {
-      console.error('Error deleting user:', error);
-    }
+    setUsers(users.filter(user => user._id !== id));
   };
 
-  const handleUpdate = async (e) => {
+  const handleUpdate = (e) => {
     e.preventDefault();
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        console.error('No se encontró el token. Por favor, inicia sesión.');
-        return;
-      }
 
-      await axios.put(`http://localhost:4000/api/auth/users/${selectedUser}`, {
-        name,
-        email,
-        password,
-        isAdmin,
-      }, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+    setUsers(users.map(user =>
+      user._id === selectedUser
+        ? { ...user, name, email, isAdmin }
+        : user
+    ));
 
-      setUsers(users.map(user =>
-        user._id === selectedUser
-          ? { ...user, name, email, isAdmin }
-          : user
-      ));
-
-      setShowModal(false);
-    } catch (error) {
-      console.error('Error updating user:', error);
-    }
+    setShowModal(false);
   };
 
   const openUpdateModal = (user) => {

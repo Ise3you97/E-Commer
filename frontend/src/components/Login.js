@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from 'axios';
 import { Form, Button, Card } from 'react-bootstrap';
 
 function Login() {    
@@ -10,24 +9,11 @@ function Login() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        axios.post("http://localhost:4000/api/auth/login", { email, password })
-            .then(result => {
-                if (result.data.token) {
-                    // Almacena el token y la información del usuario en el almacenamiento local
-                    localStorage.setItem('token', result.data.token);
-                    localStorage.setItem('username', result.data.user.name);
-                    localStorage.setItem('email', result.data.user.email);
-                    localStorage.setItem('isAdmin', result.data.user.isAdmin);
-
-                    navigate(result.data.user.isAdmin ? "/" : "/");
-                } else {
-                    alert("Login fallido: " + result.data.message);
-                }
-            })
-            .catch(err => {
-                console.error('Error:', err);
-                alert('Error en el login.');
-            });
+        // Mostrar un mensaje de alerta en lugar de enviar la solicitud
+        alert("Esto es una version de prueba.");
+        
+        // Puedes redirigir a una página específica si lo deseas, por ejemplo:
+        // navigate('/somepage');
     };
 
     return (
@@ -43,6 +29,7 @@ function Login() {
                                 placeholder="Enter Email" 
                                 autoComplete="off" 
                                 onChange={(e) => setEmail(e.target.value)}
+                                disabled
                             />
                         </Form.Group>
                         <Form.Group controlId="formPassword" className="mb-4">
@@ -51,6 +38,7 @@ function Login() {
                                 type="password" 
                                 placeholder="Enter Password" 
                                 onChange={(e) => setPassword(e.target.value)}
+                                disabled
                             />
                         </Form.Group>
                         <Button variant="success" type="submit" className="w-100">

@@ -102,8 +102,7 @@ const CheckoutForm = () => {
                 <Form.Control 
                   type="text" 
                   value={name} 
-                  onChange={(e) => setName(e.target.value)} 
-                  required 
+                  readOnly // Hace que el campo sea de solo lectura
                   placeholder="Enter your name" 
                 />
               </Form.Group>
@@ -113,8 +112,7 @@ const CheckoutForm = () => {
                 <Form.Control 
                   type="text" 
                   value={address} 
-                  onChange={(e) => setAddress(e.target.value)} 
-                  required 
+                  readOnly // Hace que el campo sea de solo lectura
                   placeholder="Enter your address" 
                 />
               </Form.Group>
@@ -156,6 +154,7 @@ const CheckoutForm = () => {
                         color: '#dc3545',
                       },
                     },
+                    disabled: true, // Hace que el campo sea de solo lectura
                   }} 
                 />
               </div>
@@ -179,6 +178,7 @@ const CheckoutForm = () => {
                             color: '#dc3545',
                           },
                         },
+                        disabled: true, // Hace que el campo sea de solo lectura
                       }} 
                     />
                   </div>
@@ -201,6 +201,7 @@ const CheckoutForm = () => {
                             color: '#dc3545',
                           },
                         },
+                        disabled: true, // Hace que el campo sea de solo lectura
                       }} 
                     />
                   </div>

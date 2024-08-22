@@ -12,6 +12,8 @@ function Signup() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        alert('Esto es una version de prueba ');
+        /*
         if (!acceptTerms) {
             alert("Debes aceptar las políticas de privacidad para registrarte.");
             return;
@@ -25,7 +27,8 @@ function Signup() {
                 console.error('Error:', err);
                 alert('Error al registrarse.');
             });
-    };
+    */
+            };
 
     return (
         <div className="d-flex justify-content-center align-items-center bg-light vh-100">

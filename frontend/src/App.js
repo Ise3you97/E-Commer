@@ -16,6 +16,7 @@ import ProductsByTag from './components/ProductsByTag';
 import AdminOrders from './components/AdminOrders';
 import OrderList from './components/OrderList';
 import Footer from './components/Footer';
+import P_details from './components/P_Details'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css'; // Importa el archivo CSS
 
@@ -31,6 +32,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/products" element={<ProductList />} />
           <Route path="/products/:id" element={<ProductDetail />} />
+          <Route path="/products/details" element={<P_details />} />
           <Route path="/register" element={<Signup />} />
           <Route path="/login" element={<Login />} />
           <Route path="/cart" element={<Cart />} />

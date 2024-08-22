@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Card, Button, Alert } from 'react-bootstrap';
 
@@ -12,19 +11,38 @@ const ProductsByTag = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const { data } = await axios.get(`http://localhost:4000/api/products/tag/${tag}`);
-        setProducts(data);
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching products:', error);
-        setError('Error al cargar productos.');
-        setLoading(false);
-      }
+    // Generar datos simulados
+    const generateFakeProducts = () => {
+      return [
+        {
+          _id: '1',
+          name: `Producto 1 (${tag})`,
+          description: 'Descripción del producto 1',
+          price: 10.99,
+          image: 'https://via.placeholder.com/150',
+        },
+        {
+          _id: '2',
+          name: `Producto 2 (${tag})`,
+          description: 'Descripción del producto 2',
+          price: 15.99,
+          image: 'https://via.placeholder.com/150',
+        },
+        {
+          _id: '3',
+          name: `Producto 3 (${tag})`,
+          description: 'Descripción del producto 3',
+          price: 12.99,
+          image: 'https://via.placeholder.com/150',
+        },
+      ];
     };
 
-    fetchProducts();
+    // Simular la carga de datos
+    setTimeout(() => {
+      setProducts(generateFakeProducts());
+      setLoading(false);
+    }, 1000);
   }, [tag]);
 
   const handleQuantityChange = (productId, delta) => {
@@ -64,7 +82,7 @@ const ProductsByTag = () => {
   }
 
   return (
-    <Container className="mt-5">
+    <Container className="mt-5" >
       <h1 className="text-center mb-4">Productos - {tag}</h1>
       {error && <Alert variant="danger">{error}</Alert>}
       <Row>
@@ -99,7 +117,8 @@ const ProductsByTag = () => {
                   </div>
                   <Button
                     variant="primary"
-                    onClick={() => handleAddToCart(product)}
+                    //onClick={() => handleAddToCart(product)}
+                    onClick={()=> alert('Esto es una version de muestra este comportamiento esta desabilitado')}
                     className="ml-2"
                   >
                     Añadir al Carrito

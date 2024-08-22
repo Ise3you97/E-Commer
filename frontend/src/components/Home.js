@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Container, Row, Col, Card, Button, Alert, Form } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import OfferCarousel from './OfferCarousel'; // Asegúrate de que este archivo esté en la misma carpeta
+import OfferCarousel from './OfferCarousel';
 
 const Home = () => {
   const [featuredProducts, setFeaturedProducts] = useState([]);
@@ -17,7 +17,7 @@ const Home = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const { data } = await axios.get('http://localhost:4000/api/products');
+        const { data } = await axios.get('https://fakestoreapi.com/products');
         setFeaturedProducts(data);
         setLoading(false);
       } catch (error) {
@@ -39,7 +39,7 @@ const Home = () => {
     if (searchQuery) {
       const lowercasedQuery = searchQuery.toLowerCase();
       const filtered = featuredProducts.filter(product =>
-        product.name.toLowerCase().includes(lowercasedQuery)
+        product.title.toLowerCase().includes(lowercasedQuery)
       );
       setFilteredProducts(filtered);
     } else {
@@ -63,10 +63,10 @@ const Home = () => {
       return;
     }
 
-    const quantity = quantities[product._id] || 1;
+    const quantity = quantities[product.id] || 1;
     let cart = JSON.parse(localStorage.getItem('cart')) || [];
     
-    cart = cart.filter(item => item._id !== product._id);
+    cart = cart.filter(item => item.id !== product.id);
     
     for (let i = 0; i < quantity; i++) {
       cart.push(product);
@@ -74,7 +74,7 @@ const Home = () => {
     
     localStorage.setItem('cart', JSON.stringify(cart));
     alert('Producto agregado al carrito');
-    setQuantities(prevQuantities => ({ ...prevQuantities, [product._id]: 1 }));
+    setQuantities(prevQuantities => ({ ...prevQuantities, [product.id]: 1 }));
   };
 
   const handleUpdateProduct = (productId) => {
@@ -84,10 +84,7 @@ const Home = () => {
   const handleDeleteProduct = async (productId) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:4000/api/products/${productId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setFeaturedProducts(prevProducts => prevProducts.filter(product => product._id !== productId));
+      setFeaturedProducts(prevProducts => prevProducts.filter(product => product.id !== productId));
       alert('Producto eliminado exitosamente.');
     } catch (error) {
       console.error('Error deleting product:', error);
@@ -99,6 +96,10 @@ const Home = () => {
     setSearchQuery(e.target.value);
   };
 
+  const handleProductClick = (productId) => {
+    navigate(`/products/details`);
+  };
+
   if (loading) {
     return <div className="text-center mt-5">Cargando...</div>;
   }
@@ -106,6 +107,15 @@ const Home = () => {
   return (
     <div className='home'>
       <Container className="mt-5">
+        <Row>
+          <Col>
+            <Alert variant="warning" className="text-center">
+              Esto es solo una página de muestra y no tiene nada que ver con el producto final.
+              <br />
+              Su único propósito es mostrar las funcionalidades principales de una tienda online.
+            </Alert>
+          </Col>
+        </Row>
         <Row>
           <Col>
             <OfferCarousel />
@@ -123,7 +133,7 @@ const Home = () => {
             />
             <Link to="/products">
               <Button variant="primary" className="mt-3 px-4 py-3 rounded-pill shadow">
-                Ver Todos los Productos
+                Ver Todas las Categorias
               </Button>
             </Link>
           </Col>
@@ -136,24 +146,28 @@ const Home = () => {
             </Col>
           ) : (
             filteredProducts.map(product => (
-              <Col key={product._id} md={4} className="mb-4">
+              <Col key={product.id} md={4} className="mb-4">
                 <Card className="shadow-sm rounded border-light card-hover">
-                  <Card.Img variant="top" src={product.image} alt={product.name} style={{ height: '200px', objectFit: 'cover' }} />
+                  <Card.Img variant="top" src={product.image} alt={product.title} style={{ height: '200px', objectFit: 'cover' }} />
                   <Card.Body>
-                    <Card.Title className="text-primary">{product.name}</Card.Title>
-                    <Card.Text>{product.description}</Card.Text>
+                    <Card.Title
+                      className="text-primary cursor-pointer"
+                      onClick={() => handleProductClick(product.id)}
+                    >
+                      {product.title}
+                    </Card.Title>
                     <Card.Text><strong>${product.price}</strong></Card.Text>
                     {isAdmin ? (
                       <div className="d-flex justify-content-between">
                         <Button
                           variant="outline-danger"
-                          onClick={() => handleDeleteProduct(product._id)}
+                          onClick={() => handleDeleteProduct(product.id)}
                         >
                           Eliminar
                         </Button>
                         <Button
                           variant="outline-secondary"
-                          onClick={() => handleUpdateProduct(product._id)}
+                          onClick={() => handleUpdateProduct(product.id)}
                         >
                           Actualizar
                         </Button>
@@ -161,9 +175,9 @@ const Home = () => {
                     ) : (
                       <div className="d-flex align-items-center justify-content-between">
                         <div>
-                          <Button variant="outline-secondary" onClick={() => handleQuantityChange(product._id, -1)}>-</Button>
-                          <span className="mx-2">{quantities[product._id] || 1}</span>
-                          <Button variant="outline-secondary" onClick={() => handleQuantityChange(product._id, 1)}>+</Button>
+                          <Button variant="outline-secondary" onClick={() => handleQuantityChange(product.id, -1)}>-</Button>
+                          <span className="mx-2">{quantities[product.id] || 1}</span>
+                          <Button variant="outline-secondary" onClick={() => handleQuantityChange(product.id, 1)}>+</Button>
                         </div>
                         <Button
                           variant="primary"

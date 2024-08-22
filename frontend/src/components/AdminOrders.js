@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Container, Card, Badge, ListGroup, Accordion, Spinner, Alert } from 'react-bootstrap';
+import { Container, Card, Badge, Accordion, Spinner, Alert } from 'react-bootstrap';
 
 const AdminOrders = () => {
     const [orders, setOrders] = useState([]);
@@ -8,23 +8,34 @@ const AdminOrders = () => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const fetchOrders = async () => {
+        const fetchFakeOrders = async () => {
             try {
-                const token = localStorage.getItem('token');
-                const response = await axios.get('http://localhost:4000/api/orders', {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                });
-                setOrders(response.data);
+                // Simulando la obtención de datos de órdenes desde una API falsa
+                const { data } = await axios.get('https://jsonplaceholder.typicode.com/posts');
+
+                // Transformamos los datos para simular que son órdenes
+                const fakeOrders = data.slice(0, 10).map(post => ({
+                    _id: post.id,
+                    email: `user${post.id}@example.com`,
+                    name: post.title,
+                    address: `Calle Falsa ${post.id}, Ciudad Falsa`,
+                    products: [
+                        { name: 'Producto 1', price: Math.random() * 100 },
+                        { name: 'Producto 2', price: Math.random() * 100 },
+                    ],
+                    totalAmount: Math.random() * 200,
+                    createdAt: new Date().toISOString(),
+                }));
+
+                setOrders(fakeOrders);
             } catch (error) {
-                setError(error.response?.data?.message || 'An error occurred while fetching orders');
+                setError('An error occurred while fetching orders');
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchOrders();
+        fetchFakeOrders();
     }, []);
 
     if (loading) return <Spinner animation="border" />;
@@ -36,38 +47,39 @@ const AdminOrders = () => {
             {orders.length === 0 ? (
                 <p>No orders found.</p>
             ) : (
-                <Accordion defaultActiveKey="0">
-                    {orders.map((order, index) => (
-                        <Card key={order._id} className="mb-3 shadow-sm">
-                            <Accordion.Item eventKey={index.toString()}>
-                                <Accordion.Header>
-                                    <strong>Order ID:</strong> {order._id} - <Badge bg="primary">${order.totalAmount.toFixed(2)}</Badge>
-                                </Accordion.Header>
-                                <Accordion.Body>
-                                    <Card.Body>
-                                        <Card.Title>User: {order.email}</Card.Title>
-                                        <Card.Text>
-                                            <strong>Name:</strong> {order.name}
-                                            <br />
-                                            <strong>Address:</strong> {order.address}
-                                        </Card.Text>
-                                        <h6>Products:</h6>
-                                        <ListGroup variant="flush">
+                <div className="d-flex flex-wrap">
+                    {orders.map((order) => (
+                        <Card key={order._id} className="m-3 shadow-sm" style={{ width: '18rem', background: 'transparent', border: 'none' }}>
+                            <Card.Header className="bg-primary text-white">
+                                <h5>Order #{order._id}</h5>
+                            </Card.Header>
+                            <Card.Body>
+                                <Card.Title>{order.name}</Card.Title>
+                                <Card.Text>
+                                    <strong>Address:</strong> {order.address}
+                                </Card.Text>
+                                <Accordion flush>
+                                    <Accordion.Item eventKey="0">
+                                        <Accordion.Header>Products</Accordion.Header>
+                                        <Accordion.Body>
                                             {order.products.map((product, index) => (
-                                                <ListGroup.Item key={index}>
+                                                <div key={index}>
                                                     {product.name} - <Badge bg="success">${product.price.toFixed(2)}</Badge>
-                                                </ListGroup.Item>
+                                                </div>
                                             ))}
-                                        </ListGroup>
-                                    </Card.Body>
-                                    <Card.Footer>
-                                        <small className="text-muted">Created At: {new Date(order.createdAt).toLocaleDateString()}</small>
-                                    </Card.Footer>
-                                </Accordion.Body>
-                            </Accordion.Item>
+                                        </Accordion.Body>
+                                    </Accordion.Item>
+                                </Accordion>
+                                <Card.Text className="mt-3">
+                                    <strong>Total:</strong> <Badge bg="primary">${order.totalAmount.toFixed(2)}</Badge>
+                                </Card.Text>
+                            </Card.Body>
+                            <Card.Footer>
+                                <small className="text-muted">Created At: {new Date(order.createdAt).toLocaleDateString()}</small>
+                            </Card.Footer>
                         </Card>
                     ))}
-                </Accordion>
+                </div>
             )}
         </Container>
     );
