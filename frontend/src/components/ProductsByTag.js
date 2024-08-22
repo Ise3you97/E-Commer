@@ -82,7 +82,7 @@ const ProductsByTag = () => {
   }
 
   return (
-    <Container className="mt-5" >
+    <Container className="mt-5" style={{height:'100dvh'}}>
       <h1 className="text-center mb-4">Productos - {tag}</h1>
       {error && <Alert variant="danger">{error}</Alert>}
       <Row>
